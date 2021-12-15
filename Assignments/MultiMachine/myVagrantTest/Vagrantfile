@@ -1,0 +1,48 @@
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+  # SHELL
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "bento/ubuntu-18.04"
+  config.vm.hostname = "lamp"       # host name is herer and should not be left unchanged
+    config.vm.provision "shell", inline: <<-SHELL
+      wget https://apt.puppetlabs.com/puppet5-release-$(lsb_release -cs).deb
+      dpkg -i puppet5-release-$(lsb_release -cs).deb
+      apt-get -qq update
+      apt-get install -y puppet-agent
+    SHELL
+  #config.vm.define "appserver" do |appserver|
+  #  appserver.vm.hostname = "appserver"
+  #end
+
+  #config.vm.define "dbserver" do |dbserver|
+  #  dbserver.vm.hostname = "dbserver"
+  #end
+
+  #config.vm.define "web" do |web|
+  #  web.vm.network "forwarded_port", guest: 80, host: 8080
+  #  web.vm.hostname = "web"
+  #end
+
+  #config.vm.define "tst0" do |tst0|
+  #  tst0.vm.hostname = "tst0"
+  #end
+
+  #config.vm.define "tst1" do |tst1|
+  #  tst1.vm.hostname = "tst1"
+  #end
+
+  #config.vm.define "tst2" do |tst2|
+  #  tst2.vm.hostname = "tst2"
+  #end
+
+  config.vm.provision "puppet" do |puppet|
+    puppet.manifests_path = "../myVagrantTest/environments/test/manifests"
+    puppet.module_path = "environments/test/modules"
+    puppet.manifest_file = "init.pp"
+  end
+end
